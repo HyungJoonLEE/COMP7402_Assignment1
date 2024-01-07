@@ -12,6 +12,9 @@ file(GLOB_RECURSE PROJECT_FILES
 )
 
 # Add executable for this project
-add_executable(des ${PROJECT_FILES})
+add_executable(des ${PROJECT_FILES}
+        src/des.c
+        include/des.h)
 
 target_include_directories(des PRIVATE ${INCLUDE_DIR})
+target_link_libraries(des m)
