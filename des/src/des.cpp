@@ -212,14 +212,16 @@ void generate_keys(string key) {
 string DES(unsigned int round){
     //1. Applying the initial permutation
     string perm = "";
-    for(int i = 0; i < 64; i++){
+    string txt = "";
+    for (int i = 0; i < 64; i++){
         perm += pt[initial_permutation[i]-1];
     }
     // 2. Dividing the result into two equal halves
     string left = perm.substr(0, 32);
     string right = perm.substr(32, 32);
+
     // The plain text is encrypted 16 times
-    for(int i = 0; i < round; i++) {
+    for (int i = 0; i < round; i++) {
         string right_expanded = "";
         // 3.1. The right half of the plain text is expanded
         for (int j = 0; j < 48; j++) {
@@ -230,7 +232,7 @@ string DES(unsigned int round){
         // 3.4. The result is divided into 8 equal parts and passed
         // through 8 substitution boxes. After passing through a
         // substituion box, each box is reduces from 6 to 4 bits.
-        for(int j = 0; j < 8; j++){
+        for (int j = 0; j < 8; j++) {
             // Finding row and column indices to lookup the
             // substituition box
             string row1= xored.substr(j * 6,1) + xored.substr(j * 6 + 5,1);
@@ -243,14 +245,14 @@ string DES(unsigned int round){
         }
         // 3.5. Another permutation is applied
         string perm2 ="";
-        for(int i = 0; i < 32; i++){
+        for (int i = 0; i < 32; i++) {
             perm2 += res[permutation_tab[i]-1];
         }
         // 3.6. The result is xored with the left half
         xored = Xor(perm2, left);
         // 3.7. The left and the right parts of the plain text are swapped
         left = xored;
-        if(i < 15){
+        if (i < 15) {
             string temp = right;
             right = xored;
             left = temp;
@@ -258,7 +260,13 @@ string DES(unsigned int round){
         cout << "Round " << i + 1 << ": "
              << "L" << i + 1 << ": " << binToHex(left) << "  "
              << "R" << i + 1 << ": " << binToHex(right) << "  "
-             << "Round Key: " << binToHex(round_keys[i]) << endl;;
+             << "Round Key: " << binToHex(round_keys[i]) << endl;
+
+        txt += "Round " + to_string(i + 1) + ":  L" + to_string(i + 1) + ": "
+                + binToHex(left) + "  R" + to_string(i + 1) + ": "
+                + binToHex(right) + "  Round Key: " + binToHex(round_keys[i]);
+        appendToFile("des.txt", txt);
+        txt = "";
     }
     // 4. The halves of the plain text are applied
     string combined_text = left + right;
@@ -270,3 +278,21 @@ string DES(unsigned int round){
     //And we finally get the cipher text
     return ciphertext;
 }
+
+
+void appendToFile(const std::string& filename, const std::string& text) {
+    // Open the file in append mode. It will be created if it doesn't exist.
+    std::ofstream file(filename, std::ios::app);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open or create the file: " << filename << std::endl;
+        return;
+    }
+
+    // Write the text to the file
+    file << text << std::endl;
+
+    // Close the file
+    file.close();
+}
+

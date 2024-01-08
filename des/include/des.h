@@ -7,6 +7,8 @@
 #include <cmath>
 #include <unordered_map>
 #include <cctype>
+#include <fstream>
+#include <iostream>
 
 
 using namespace std;
@@ -23,6 +25,7 @@ string hexCharToBin(char hexChar);
 string hexToBin(const string& hexStr);
 string binToHex(const std::string& binary);
 int getRoundsInput(const std::string& prompt);
+void appendToFile(const std::string& filename, const std::string& text);
 
 // Function to convert a number in decimal to binary
 string decToBin(int decimal);
