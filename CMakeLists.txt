@@ -9,10 +9,8 @@ if (EXISTS "${LOC_PATH}")
     message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
 endif ()
 
-set(CMAKE_C_STANDARD 17)
-set(CMAKE_C_EXTENSIONS OFF)
 
 # Add subdirectories for each project
-add_subdirectory(AES)
-add_subdirectory(DES)
-add_subdirectory(Avalanche)
+add_subdirectory(des)
+add_subdirectory(aes)
+add_subdirectory(avalanche)
