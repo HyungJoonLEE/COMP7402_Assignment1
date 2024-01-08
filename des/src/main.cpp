@@ -10,14 +10,14 @@ int main() {
 
     generate_keys(key);
 
-    string ct= DES(round);
+    string ct = DES(round);
     cout << "================================================================" << endl;
-    cout << "Ciphertext(Hex): " << binToHex(ct) << endl;
-    cout << "Ciphertext(Bin): " << ct << endl;
+    cout << "Cipher Text(Hex): " << binToHex(ct) << endl;
+    cout << "Cipher Text(Bin): " << ct << endl;
 
     txt += "================================================================\n"
-           "Ciphertext(Hex): " + binToHex(ct) + "\n" +
-            "Ciphertext(Bin): " + ct + "\n\n";
+           "Cipher Text(Hex): " + binToHex(ct) + "\n" +
+            "Cipher Text(Bin): " + ct + "\n\n";
 
     appendToFile("des.txt", txt);
     // 02468aceeca86420

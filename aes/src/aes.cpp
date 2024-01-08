@@ -18,11 +18,11 @@ AES::AES(const AESKeyLength keyLength) {
 }
 
 unsigned char *AES::EncryptECB(const unsigned char in[], unsigned int inLen,
-                               const unsigned char key[]) {
+                               const unsigned char key[], int rounds) {
     CheckLength(inLen);
     unsigned char *out = new unsigned char[inLen];
     unsigned char *roundKeys = new unsigned char[4 * Nb * (Nr + 1)];
-    KeyExpansion(key, roundKeys);
+    getRoundKeys(key, roundKeys, rounds);
     for (unsigned int i = 0; i < inLen; i += blockBytesLen) {
         EncryptBlock(in + i, out + i, roundKeys);
     }
@@ -298,7 +298,7 @@ void AES::Rcon(unsigned char *a, unsigned int n) {
 void AES::KeyExpansion(const unsigned char key[], unsigned char w[]) {
     unsigned char temp[4];
     unsigned char rcon[4];
-
+    size_t len = 4 * Nb * (Nr + 1);
     unsigned int i = 0;
     while (i < 4 * Nk) {
         w[i] = key[i];
@@ -306,7 +306,7 @@ void AES::KeyExpansion(const unsigned char key[], unsigned char w[]) {
     }
 
     i = 4 * Nk;
-    while (i < 4 * Nb * (Nr + 1)) {
+    while (i < len) {
         temp[0] = w[i - 4 + 0];
         temp[1] = w[i - 4 + 1];
         temp[2] = w[i - 4 + 2];
@@ -396,9 +396,10 @@ unsigned char *AES::VectorToArray(std::vector<unsigned char> &a) {
 }
 
 std::vector<unsigned char> AES::EncryptECB(std::vector<unsigned char> in,
-                                           std::vector<unsigned char> key) {
+                                           std::vector<unsigned char> key,
+                                           int rounds) {
     unsigned char *out = EncryptECB(VectorToArray(in), (unsigned int)in.size(),
-                                    VectorToArray(key));
+                                    VectorToArray(key), rounds);
     std::vector<unsigned char> v = ArrayToVector(out, in.size());
     delete[] out;
     return v;
@@ -451,4 +452,167 @@ std::vector<unsigned char> AES::DecryptCFB(std::vector<unsigned char> in,
     std::vector<unsigned char> v = ArrayToVector(out, (unsigned int)in.size());
     delete[] out;
     return v;
+}
+
+
+void AES::printRoundKeys(const unsigned char w[], size_t len) {
+    cout << "\nGenerated Round Keys:" << endl;
+    int j = 0;
+    for (int i = 0; i < len; i++) {
+        if (i != 0 && i % 16 == 0) {
+            printf(" : Round Key %d\n", j);
+            j++;
+        }
+        printf("%02X ", w[i]);
+    }
+    printf(" : Round Key %d\n\n", j);
+    cout << "Ciphertext Message:" << endl;
+}
+
+
+void AES::getRoundKeys(const unsigned char key[], unsigned char w[], int rounds) {
+    unsigned char temp[4];
+    unsigned char rcon[4];
+    Nr = rounds;
+    size_t len = 4 * Nb * (Nr + 1);
+    unsigned int i = 0;
+    while (i < 4 * Nk) {
+        w[i] = key[i];
+        i++;
+    }
+
+    i = 4 * Nk;
+    while (i < len) {
+        temp[0] = w[i - 4 + 0];
+        temp[1] = w[i - 4 + 1];
+        temp[2] = w[i - 4 + 2];
+        temp[3] = w[i - 4 + 3];
+
+        if (i / 4 % Nk == 0) {
+            RotWord(temp);
+            SubWord(temp);
+            Rcon(rcon, i / (Nk * 4));
+            XorWords(temp, rcon, temp);
+        } else if (Nk > 6 && i / 4 % Nk == 4) {
+            SubWord(temp);
+        }
+
+        w[i + 0] = w[i - 4 * Nk] ^ temp[0];
+        w[i + 1] = w[i + 1 - 4 * Nk] ^ temp[1];
+        w[i + 2] = w[i + 2 - 4 * Nk] ^ temp[2];
+        w[i + 3] = w[i + 3 - 4 * Nk] ^ temp[3];
+        i += 4;
+    }
+
+    printRoundKeys(w, len);
+}
+
+
+bool AES::isValidHex(const string &str) {
+    for (char c : str) {
+        if (!isxdigit(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+string AES::getHexInput(const string &prompt) {
+    string input;
+    do {
+        cout << prompt;
+        cin >> input;
+        if (!isValidHex(input)) {
+            cout << "Invalid hexadecimal input. Please try again." << endl;
+        }
+    } while (!isValidHex(input));
+    return input;
+}
+
+
+string AES::hexCharToBin(char hexChar) {
+    switch(hexChar) {
+        case '0': return "0000";
+        case '1': return "0001";
+        case '2': return "0010";
+        case '3': return "0011";
+        case '4': return "0100";
+        case '5': return "0101";
+        case '6': return "0110";
+        case '7': return "0111";
+        case '8': return "1000";
+        case '9': return "1001";
+        case 'A': case 'a': return "1010";
+        case 'B': case 'b': return "1011";
+        case 'C': case 'c': return "1100";
+        case 'D': case 'd': return "1101";
+        case 'E': case 'e': return "1110";
+        case 'F': case 'f': return "1111";
+        default: return ""; // invalid input
+    }
+}
+
+
+string AES::hexToBin(const string &hexStr) {
+    string binStr = "";
+    for (char hexChar : hexStr) {
+        binStr += hexCharToBin(hexChar);
+    }
+    return binStr;
+}
+
+
+string AES::binToHex(const string &binary) {
+    string hex;
+    int len = binary.length();
+    int padding = (4 - len % 4) % 4; // Padding to make length a multiple of 4
+
+    string paddedBinary = string(padding, '0') + binary;
+
+    for (int i = 0; i < paddedBinary.length(); i += 4) {
+        string fourBits = paddedBinary.substr(i, 4);
+        int value = 0;
+
+        if (fourBits[0] == '1') value += 8;
+        if (fourBits[1] == '1') value += 4;
+        if (fourBits[2] == '1') value += 2;
+        if (fourBits[3] == '1') value += 1;
+
+        if (value < 10) {
+            hex += (char)('0' + value);
+        } else {
+            hex += (char)('A' + (value - 10));
+        }
+    }
+
+    return hex;
+}
+
+
+int AES::getRoundsInput(const string &prompt) {
+    int rounds;
+    while (true) {
+        cout << prompt;
+        cin >> rounds;
+
+        if (cin.fail() || rounds < 1) {
+            cout << "Invalid input. Please enter a positive integer.\n";
+            cin.clear(); // Clear error flags
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore remaining input
+        }
+        else {
+            break;
+        }
+    }
+    return rounds;
+}
+
+
+string AES::vectorToString(const std::vector<unsigned char>& vec) {
+    std::ostringstream oss;
+    for (unsigned int i = 0; i < vec.size(); i++) {
+        oss << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(vec[i]) << " ";
+    }
+    return oss.str();
 }

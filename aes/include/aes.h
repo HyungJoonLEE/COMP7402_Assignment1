@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <iomanip>
+#include <cmath>
 
 using namespace std;
 
@@ -68,7 +70,7 @@ public:
     explicit AES(const AESKeyLength keyLength = AESKeyLength::AES_256);
 
     unsigned char *EncryptECB(const unsigned char in[], unsigned int inLen,
-                              const unsigned char key[]);
+                              const unsigned char key[], int rounds);
 
     unsigned char *DecryptECB(const unsigned char in[], unsigned int inLen,
                               const unsigned char key[]);
@@ -86,7 +88,8 @@ public:
                               const unsigned char key[], const unsigned char *iv);
 
     std::vector<unsigned char> EncryptECB(std::vector<unsigned char> in,
-                                          std::vector<unsigned char> key);
+                                          std::vector<unsigned char> key,
+                                          int rounds);
 
     std::vector<unsigned char> DecryptECB(std::vector<unsigned char> in,
                                           std::vector<unsigned char> key);
@@ -110,7 +113,19 @@ public:
     void printHexArray(unsigned char a[], unsigned int n);
 
     void printHexVector(std::vector<unsigned char> a);
+
+    bool isValidHex(const std::string& str);
+    string getHexInput(const std::string& prompt);
+    string hexCharToBin(char hexChar);
+    string hexToBin(const string& hexStr);
+    string binToHex(const std::string& binary);
+    int getRoundsInput(const std::string& prompt);
+    void printRoundKeys(const unsigned char w[], size_t len);
+    void getRoundKeys(const unsigned char key[], unsigned char w[], int rounds);
+    string vectorToString(const std::vector<unsigned char>& a);
 };
+
+
 
 const unsigned char sbox[16][16] = {
         {0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b,

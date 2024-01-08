@@ -1,15 +1,38 @@
 #include "aes.h"
 
+
+vector<unsigned char> hexStringToUCharArray(const std::string& hexStr) {
+    if (hexStr.length() % 2 != 0) {
+        throw std::invalid_argument("Hexadecimal string length must be even.");
+    }
+
+    std::vector<unsigned char> ucharArray;
+    for (size_t i = 0; i < hexStr.length(); i += 2) {
+        std::string byteString = hexStr.substr(i, 2);
+        unsigned char byte = static_cast<unsigned char>(std::stoul(byteString, nullptr, 16));
+        ucharArray.push_back(byte);
+    }
+
+    return ucharArray;
+}
+
+
 int main() {
-    unsigned char plain[] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff }; //plaintext example
-    unsigned char key[] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f }; //key example
-    unsigned int plainLen = 16 * sizeof(unsigned char);  //bytes in plaintext
+//    string plains = "0123456789abcdeffedcba9876543210";
+//    string keys   = "0f1571c947d9e8590cb7add6af7f6798";
+    vector<unsigned char> plain;
+    vector<unsigned char> key;
+
+    AES aes(AESKeyLength::AES_128); //// 128 - key length, can be 128, 192 or 256
+    string plains = aes.getHexInput("Enter hexadecimal plain text: ");
+    string keys = aes.getHexInput("Enter 64-bit hexadecimal key: ");
+    int round = aes.getRoundsInput("Enter the number of rounds: ");
 
 
-    AES aes(AESKeyLength::AES_128);  ////128 - key length, can be 128, 192 or 256
-    unsigned char* c = aes.EncryptECB(plain, plainLen, key);
+    plain = hexStringToUCharArray(plains);
+    key = hexStringToUCharArray(keys);
 
-    size_t length = sizeof(c) / sizeof(c[0]);
-    std::string str(reinterpret_cast<char*>(c), length);
-    std::cout << "Converted string: " << str << std::endl;
+    string ct = aes.vectorToString(aes.EncryptECB(plain, key, round));
+    cout << "Cipher Text(Hex): " << ct << endl;
+    cout << "Cipher Text(Bin): " << aes.hexToBin(ct) << endl;
 }

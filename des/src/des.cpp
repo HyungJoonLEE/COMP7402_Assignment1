@@ -105,8 +105,7 @@ string binToHex(const string& binary) {
 }
 
 
-string decToBin(int decimal)
-{
+string decToBin(int decimal) {
     string binary;
     while(decimal != 0) {
         binary = (decimal % 2 == 0 ? "0" : "1") + binary;
