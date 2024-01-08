@@ -25,10 +25,10 @@ string binToHex(const std::string& binary);
 int getRoundsInput(const std::string& prompt);
 
 // Function to convert a number in decimal to binary
-string convertDecimalToBinary(int decimal);
+string decToBin(int decimal);
 
 // Function to convert a number in binary to decimal
-int convertBinaryToDecimal(string binary);
+int binToDec(string binary);
 
 // Function to do a circular left shift by 1
 string shift_left_once(string key_chunk);

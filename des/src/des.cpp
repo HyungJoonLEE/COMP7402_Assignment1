@@ -4,7 +4,7 @@ string round_keys[16];
 string pt;
 
 
-bool isValidHex(const std::string& str) {
+bool isValidHex(const string& str) {
     for (char c : str) {
         if (!isxdigit(c)) {
             return false;
@@ -14,30 +14,31 @@ bool isValidHex(const std::string& str) {
 }
 
 
-string getHexInput(const std::string& prompt) {
-    std::string input;
+string getHexInput(const string& prompt) {
+    string input;
     do {
-        std::cout << prompt;
-        std::cin >> input;
+        cout << prompt;
+        cin >> input;
         if (!isValidHex(input)) {
-            std::cout << "Invalid hexadecimal input. Please try again." << std::endl;
+            cout << "Invalid hexadecimal input. Please try again." << endl;
         }
     } while (!isValidHex(input));
     return input;
 }
 
 
-int getRoundsInput(const std::string& prompt) {
+int getRoundsInput(const string& prompt) {
     int rounds;
     while (true) {
-        std::cout << prompt;
-        std::cin >> rounds;
+        cout << prompt;
+        cin >> rounds;
 
-        if (std::cin.fail() || rounds < 1) {
-            std::cout << "Invalid input. Please enter a positive integer.\n";
-            std::cin.clear(); // Clear error flags
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore remaining input
-        } else {
+        if (cin.fail() || rounds < 1) {
+            cout << "Invalid input. Please enter a positive integer.\n";
+            cin.clear(); // Clear error flags
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore remaining input
+        } 
+        else {
             break;
         }
     }
@@ -68,8 +69,8 @@ string hexCharToBin(char hexChar) {
 }
 
 
-string hexToBin(const std::string& hexStr) {
-    std::string binStr = "";
+string hexToBin(const string& hexStr) {
+    string binStr = "";
     for (char hexChar : hexStr) {
         binStr += hexCharToBin(hexChar);
     }
@@ -77,15 +78,15 @@ string hexToBin(const std::string& hexStr) {
 }
 
 
-string binToHex(const std::string& binary) {
-    std::string hex;
+string binToHex(const string& binary) {
+    string hex;
     int len = binary.length();
     int padding = (4 - len % 4) % 4; // Padding to make length a multiple of 4
 
-    std::string paddedBinary = std::string(padding, '0') + binary;
+    string paddedBinary = string(padding, '0') + binary;
 
     for (int i = 0; i < paddedBinary.length(); i += 4) {
-        std::string fourBits = paddedBinary.substr(i, 4);
+        string fourBits = paddedBinary.substr(i, 4);
         int value = 0;
 
         if (fourBits[0] == '1') value += 8;
@@ -104,7 +105,7 @@ string binToHex(const std::string& binary) {
 }
 
 
-string convertDecimalToBinary(int decimal)
+string decToBin(int decimal)
 {
     string binary;
     while(decimal != 0) {
@@ -118,7 +119,7 @@ string convertDecimalToBinary(int decimal)
 }
 
 
-int convertBinaryToDecimal(string binary)
+int binToDec(string binary)
 {
     int decimal = 0;
     int counter = 0;
@@ -131,33 +132,6 @@ int convertBinaryToDecimal(string binary)
         counter++;
     }
     return decimal;
-}
-
-
-string binaryToHex(const std::string& binary) {
-    std::string hex;
-    int len = binary.length();
-    int padding = (4 - len % 4) % 4; // Padding to make length a multiple of 4
-
-    std::string paddedBinary = std::string(padding, '0') + binary;
-
-    for (int i = 0; i < paddedBinary.length(); i += 4) {
-        std::string fourBits = paddedBinary.substr(i, 4);
-        int value = 0;
-
-        if (fourBits[0] == '1') value += 8;
-        if (fourBits[1] == '1') value += 4;
-        if (fourBits[2] == '1') value += 2;
-        if (fourBits[3] == '1') value += 1;
-
-        if (value < 10) {
-            hex += (char)('0' + value);
-        } else {
-            hex += (char)('A' + (value - 10));
-        }
-    }
-
-    return hex;
 }
 
 
@@ -202,13 +176,13 @@ string Xor(string a, string b){
 
 void generate_keys(string key) {
     // 1. Compressing the key using the PC1 table
-    string perm_key ="";
-    for(int i = 0; i < 56; i++){
-        perm_key+= key[pc1[i]-1];
+    string perm_key = "";
+    for (int i = 0; i < 56; i++){
+        perm_key += key[pc1[i]-1];
     }
     // 2. Dividing the key into two equal halves
-    string left= perm_key.substr(0, 28);
-    string right= perm_key.substr(28, 28);
+    string left = perm_key.substr(0, 28);
+    string right = perm_key.substr(28, 28);
     for(int i = 0; i < 16; i++){
         // 3.1. For rounds 1, 2, 9, 16 the key_chunks
         // are shifted by one.
@@ -256,15 +230,16 @@ string DES(unsigned int round){
         // 3.4. The result is divided into 8 equal parts and passed
         // through 8 substitution boxes. After passing through a
         // substituion box, each box is reduces from 6 to 4 bits.
-        for(int h = 0; h < 8; h++){
+        for(int j = 0; j < 8; j++){
             // Finding row and column indices to lookup the
             // substituition box
-            string row1= xored.substr(h*6,1) + xored.substr(h*6 + 5,1);
-            int row = convertBinaryToDecimal(row1);
-            string col1 = xored.substr(h*6 + 1,1) + xored.substr(h*6 + 2,1) + xored.substr(h*6 + 3,1) + xored.substr(h*6 + 4,1);;
-            int col = convertBinaryToDecimal(col1);
-            int val = substition_boxes[h][row][col];
-            res += convertDecimalToBinary(val);
+            string row1= xored.substr(j * 6,1) + xored.substr(j * 6 + 5,1);
+            int row = binToDec(row1);
+            string col1 = xored.substr(j * 6 + 1,1) + xored.substr(j * 6 + 2,1)
+                    + xored.substr(j * 6 + 3,1) + xored.substr(j * 6 + 4,1);;
+            int col = binToDec(col1);
+            int val = substition_boxes[j][row][col];
+            res += decToBin(val);
         }
         // 3.5. Another permutation is applied
         string perm2 ="";
@@ -287,10 +262,10 @@ string DES(unsigned int round){
     }
     // 4. The halves of the plain text are applied
     string combined_text = left + right;
-    string ciphertext ="";
+    string ciphertext = "";
     // The inverse of the initial permuttaion is applied
-    for(int i = 0; i < 64; i++){
-        ciphertext+= combined_text[inverse_permutation[i]-1];
+    for (int i = 0; i < 64; i++){
+        ciphertext += combined_text[inverse_permutation[i] - 1];
     }
     //And we finally get the cipher text
     return ciphertext;

@@ -1,10 +1,8 @@
 #include "des.h"
 
-using namespace std;
-int main(){
-
-    std::string hexPlainText = getHexInput("Enter hexadecimal plain text: ");
-    std::string hexKey = getHexInput("Enter 64-bit hexadecimal key: ");
+int main() {
+    string hexPlainText = getHexInput("Enter hexadecimal plain text: ");
+    string hexKey = getHexInput("Enter 64-bit hexadecimal key: ");
     int round = getRoundsInput("Enter the number of rounds: ");
     pt = hexToBin(hexPlainText);
     string key = hexToBin(hexKey);
