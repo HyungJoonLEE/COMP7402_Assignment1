@@ -1,5 +1,5 @@
-#ifndef DES_H
-#define DES_H
+#ifndef COMP7402_ASSIGNMENT1_DES_H
+#define COMP7402_ASSIGNMENT1_DES_H
 
 
 #include <iostream>
@@ -170,4 +170,5 @@ static int inverse_permutation[64]= {
         34,2,42,10,50,18,58,26,
         33,1,41,9,49,17,57,25
 };
-#endif
+
+#endif //COMP7402_ASSIGNMENT1_DES_H

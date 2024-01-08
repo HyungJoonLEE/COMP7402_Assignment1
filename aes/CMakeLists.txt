@@ -11,7 +11,8 @@ file(GLOB_RECURSE PROJECT_FILES
         "${SOURCE_DIR}/*.cpp"
 )
 
+include(FindPkgConfig)
+
 # Add executable for this project
 add_executable(AES ${PROJECT_FILES})
-
 target_include_directories(AES PRIVATE ${INCLUDE_DIR})
