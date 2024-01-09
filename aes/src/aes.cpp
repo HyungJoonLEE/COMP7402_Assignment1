@@ -475,8 +475,7 @@ void AES::printRoundKeys(const unsigned char w[], size_t len) {
     }
     printf(" : Round Key %d\n\n", j);
     cout << "Ciphertext Message:" << endl;
-    outputFile << " : Round Key " << j << endl;
-    outputFile << "\nCiphertext Message:" << j << endl;
+    outputFile << " : Round Key " << j << "\n" << endl;
     outputFile.close();
 }
 
