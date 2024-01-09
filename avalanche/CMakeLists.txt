@@ -12,6 +12,8 @@ file(GLOB_RECURSE PROJECT_FILES
 )
 
 # Add executable for this project
-add_executable(avalanche ${PROJECT_FILES})
+add_executable(avalanche ${PROJECT_FILES}
+        include/avalanche.h
+        src/avalanche.cpp)
 
 target_include_directories(avalanche PRIVATE ${INCLUDE_DIR})
