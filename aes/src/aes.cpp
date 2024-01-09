@@ -456,17 +456,28 @@ std::vector<unsigned char> AES::DecryptCFB(std::vector<unsigned char> in,
 
 
 void AES::printRoundKeys(const unsigned char w[], size_t len) {
+    ofstream outputFile("aes.txt", ios::app);
+    if (!outputFile.is_open()) {
+        cerr << "Error: Unable to open the output file." << endl;
+        return;
+    }
     cout << "\nGenerated Round Keys:" << endl;
+    outputFile << "\nGenerated Round Keys:" << endl;
     int j = 0;
     for (int i = 0; i < len; i++) {
         if (i != 0 && i % 16 == 0) {
             printf(" : Round Key %d\n", j);
+            outputFile << " : Round Key " << j << endl;
             j++;
         }
         printf("%02X ", w[i]);
+        outputFile << hex << setw(2) << setfill('0') << static_cast<int>(w[i]) << " ";
     }
     printf(" : Round Key %d\n\n", j);
     cout << "Ciphertext Message:" << endl;
+    outputFile << " : Round Key " << j << endl;
+    outputFile << "\nCiphertext Message:" << j << endl;
+    outputFile.close();
 }
 
 
@@ -615,4 +626,36 @@ string AES::vectorToString(const std::vector<unsigned char>& vec) {
         oss << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(vec[i]) << " ";
     }
     return oss.str();
+}
+
+
+vector<unsigned char> AES::hexStringToVector(const std::string& hexStr) {
+    if (hexStr.length() % 2 != 0) {
+        throw std::invalid_argument("Hexadecimal string length must be even.");
+    }
+
+    std::vector<unsigned char> ucharArray;
+    for (size_t i = 0; i < hexStr.length(); i += 2) {
+        std::string byteString = hexStr.substr(i, 2);
+        auto byte = static_cast<unsigned char>(std::stoul(byteString, nullptr, 16));
+        ucharArray.push_back(byte);
+    }
+
+    return ucharArray;
+}
+
+void AES::appendToFile(const std::string& filename, const std::string& text) {
+    // Open the file in append mode. It will be created if it doesn't exist.
+    std::ofstream file(filename, std::ios::app);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open or create the file: " << filename << std::endl;
+        return;
+    }
+
+    // Write the text to the file
+    file << text << std::endl;
+
+    // Close the file
+    file.close();
 }

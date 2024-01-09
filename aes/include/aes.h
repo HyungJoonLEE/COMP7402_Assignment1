@@ -4,11 +4,14 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 #include <iomanip>
 #include <cmath>
+
 
 using namespace std;
 
@@ -123,6 +126,8 @@ public:
     void printRoundKeys(const unsigned char w[], size_t len);
     void getRoundKeys(const unsigned char key[], unsigned char w[], int rounds);
     string vectorToString(const std::vector<unsigned char>& a);
+    vector<unsigned char> hexStringToVector(const std::string& hexStr);
+    void appendToFile(const std::string& filename, const std::string& text);
 };
 
 
