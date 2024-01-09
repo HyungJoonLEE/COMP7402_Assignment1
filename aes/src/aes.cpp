@@ -21,7 +21,7 @@ unsigned char *AES::EncryptECB(const unsigned char in[], unsigned int inLen,
                                const unsigned char key[], int rounds) {
     CheckLength(inLen);
     unsigned char *out = new unsigned char[inLen];
-    unsigned char *roundKeys = new unsigned char[4 * Nb * (Nr + 1)];
+    unsigned char *roundKeys = new unsigned char[4 * Nb * (rounds + 1)];
     getRoundKeys(key, roundKeys, rounds);
     for (unsigned int i = 0; i < inLen; i += blockBytesLen) {
         EncryptBlock(in + i, out + i, roundKeys);
@@ -395,8 +395,8 @@ unsigned char *AES::VectorToArray(std::vector<unsigned char> &a) {
     return a.data();
 }
 
-std::vector<unsigned char> AES::EncryptECB(std::vector<unsigned char> in,
-                                           std::vector<unsigned char> key,
+std::vector<unsigned char> AES::EncryptECB(std::vector<unsigned char>& in,
+                                           std::vector<unsigned char>& key,
                                            int rounds) {
     unsigned char *out = EncryptECB(VectorToArray(in), (unsigned int)in.size(),
                                     VectorToArray(key), rounds);

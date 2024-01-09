@@ -87,8 +87,8 @@ public:
     unsigned char *DecryptCFB(const unsigned char in[], unsigned int inLen,
                               const unsigned char key[], const unsigned char *iv);
 
-    std::vector<unsigned char> EncryptECB(std::vector<unsigned char> in,
-                                          std::vector<unsigned char> key,
+    std::vector<unsigned char> EncryptECB(std::vector<unsigned char>& in,
+                                          std::vector<unsigned char>& key,
                                           int rounds);
 
     std::vector<unsigned char> DecryptECB(std::vector<unsigned char> in,

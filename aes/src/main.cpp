@@ -1,7 +1,7 @@
 #include "aes.h"
 
 
-vector<unsigned char> hexStringToUCharArray(const std::string& hexStr) {
+vector<unsigned char> hexStringToVector(const std::string& hexStr) {
     if (hexStr.length() % 2 != 0) {
         throw std::invalid_argument("Hexadecimal string length must be even.");
     }
@@ -9,7 +9,7 @@ vector<unsigned char> hexStringToUCharArray(const std::string& hexStr) {
     std::vector<unsigned char> ucharArray;
     for (size_t i = 0; i < hexStr.length(); i += 2) {
         std::string byteString = hexStr.substr(i, 2);
-        unsigned char byte = static_cast<unsigned char>(std::stoul(byteString, nullptr, 16));
+        auto byte = static_cast<unsigned char>(std::stoul(byteString, nullptr, 16));
         ucharArray.push_back(byte);
     }
 
@@ -29,8 +29,8 @@ int main() {
     int round = aes.getRoundsInput("Enter the number of rounds: ");
 
 
-    plain = hexStringToUCharArray(plains);
-    key = hexStringToUCharArray(keys);
+    plain = hexStringToVector(plains);
+    key = hexStringToVector(keys);
 
     string ct = aes.vectorToString(aes.EncryptECB(plain, key, round));
     cout << "Cipher Text(Hex): " << ct << endl;
