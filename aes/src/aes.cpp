@@ -1,3 +1,16 @@
+/*---------------------------------------------------------------------------------------------
+--	SOURCE FILE:	aes.cpp -   Process AES encryption and decryption
+--
+--	DATE:			Jan 08, 2024
+--				    Added personal function for assignment
+--
+--	DESIGNERS:		Based on the code by SergeyBel
+--					aes.h
+--                  aes.cpp
+--
+--	STUDENT:		HyungJoon LEE
+-------------------------------------------------------------------------------------------------*/
+
 #include "aes.h"
 
 AES::AES(const AESKeyLength keyLength) {

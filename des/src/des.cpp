@@ -1,3 +1,16 @@
+/*---------------------------------------------------------------------------------------------
+--	SOURCE FILE:	des.cpp -   Process DES encryption
+--
+--	DATE:			Jan 08, 2024
+--				    Added personal function for assignment
+--
+--	DESIGNERS:		Based on the code by Educative
+--					des.h
+--                  des.cpp
+--
+--	STUDENT:		HyungJoon LEE
+-------------------------------------------------------------------------------------------------*/
+
 #include "des.h"
 
 string round_keys[16];
